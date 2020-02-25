@@ -11,4 +11,4 @@ Replacing `quorumcontrol/tupelo` with any repo name
 Then proceed with normal git commands
 
 ### Installation
-`go build -o git-remote-dgit && mv mv git-remote-dgit $GOPATH/bin/`
+`go build -o git-remote-dgit && mv git-remote-dgit $GOPATH/bin/`
