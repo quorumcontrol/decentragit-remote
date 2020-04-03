@@ -147,7 +147,7 @@ func (i *Initializer) findOrCreateRepoTree(ctx context.Context) (*consensus.Sign
 	}
 
 	// repo doesn't exist, create it
-	newTree, err := client.CreateRepoTree(ctx, endpoint, auth, "siaskynet")
+	newTree, err := client.CreateRepoTree(ctx, endpoint, auth, os.Getenv("DGIT_OBJ_STORAGE"))
 	if err != nil {
 		return nil, err
 	}

@@ -21,10 +21,11 @@ var log = logging.Logger("dgit.client")
 type Client struct {
 	transport.Transport
 
-	ctx       context.Context
-	tupelo    *tupelo.Client
-	nodestore nodestore.DagStore
-	server    transport.Transport
+	ctx            context.Context
+	tupelo         *tupelo.Client
+	nodestore      nodestore.DagStore
+	server         transport.Transport
+	DefaultStorage string
 }
 
 const protocol = "dgit"
@@ -49,7 +50,10 @@ func Default() (*Client, error) {
 
 func NewClient(ctx context.Context, basePath string) (*Client, error) {
 	var err error
-	c := &Client{ctx: ctx}
+	c := &Client{
+		ctx:            ctx,
+		DefaultStorage: "siaskynet",
+	}
 	dir := path.Join(basePath, protocol)
 	c.tupelo, c.nodestore, err = clientbuilder.Build(ctx, dir)
 	return c, err
@@ -58,13 +62,19 @@ func NewClient(ctx context.Context, basePath string) (*Client, error) {
 // FIXME: this probably shouldn't be here
 func NewLocalClient(ctx context.Context) (*Client, error) {
 	var err error
-	c := &Client{ctx: ctx}
+	c := &Client{
+		ctx:            ctx,
+		DefaultStorage: "chaintree",
+	}
 	c.tupelo, c.nodestore, err = clientbuilder.BuildLocal(ctx)
 	return c, err
 }
 
 // FIXME: this probably shouldn't be here
 func (c *Client) CreateRepoTree(ctx context.Context, endpoint *transport.Endpoint, auth transport.AuthMethod, storage string) (*consensus.SignedChainTree, error) {
+	if storage == "" {
+		storage = c.DefaultStorage
+	}
 	return repotree.Create(ctx, &repotree.RepoTreeOptions{
 		Name:              endpoint.Host + endpoint.Path,
 		ObjectStorageType: storage,
